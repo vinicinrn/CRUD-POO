@@ -1,7 +1,7 @@
 package Aplicar;
 
 import Model.Pessoa;
-
+import javax.swing.*;
 import java.util.List;
 import java.util.Scanner;
 
@@ -12,95 +12,80 @@ public class Main {
 
         int opcao = 0;
 
+        // laço pra verificar opções
         do {
-            System.out.println("Escolha uma opção:");
-            System.out.println("1 - Criar pessoa");
-            System.out.println("2 - Listar pessoas");
-            System.out.println("3 - Atualizar pessoa");
-            System.out.println("4 - Deletar pessoa");
-            System.out.println("0 - Sair");
-
-            opcao = scanner.nextInt();
-            scanner.nextLine(); // Limpar o buffer do scanner após a leitura do inteiro
+            opcao = JOptionPane.showOptionDialog(null, "Escolha uma opção:", "Menu", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
+                    new String[]{"Criar pessoa", "Listar pessoas", "Atualizar pessoa", "Deletar pessoa", "Sair"}, null);
 
             switch (opcao) {
-                case 1:
+                case 0:
                     // Criar e salvar uma pessoa
                     Pessoa pessoa = coletarInformacoesDoUsuario(scanner);
                     pessoaDAO.salvarPessoa(pessoa);
-                    System.out.println("Pessoa criada e salva com sucesso!");
+                    JOptionPane.showMessageDialog(null, "Pessoa criada e salva com sucesso!");
+                    break;
+
+                case 1:
+                    // Listar todas as pessoas
+                    List<Pessoa> pessoas = pessoaDAO.listarPessoas();
+                    //string dinamicamente armazenando
+                    StringBuilder listaPessoas = new StringBuilder("Listagem de Pessoas:\n");
+                    for (Pessoa p : pessoas) {
+                        listaPessoas.append("ID: ").append(p.getId()).append("\n");
+                        listaPessoas.append("Nome: ").append(p.getNome()).append("\n");
+                        listaPessoas.append("Endereço: ").append(p.getEndereco()).append("\n");
+                        listaPessoas.append("Telefone: ").append(p.getTelefone()).append("\n");
+                        listaPessoas.append("--------\n");
+                    }
+                    JOptionPane.showMessageDialog(null, listaPessoas.toString());
                     break;
 
                 case 2:
-                    // Listar todas as pessoas
-                    List<Pessoa> pessoas = pessoaDAO.listarPessoas();
-                    System.out.println("Listagem de Pessoas:");
-                    for (Pessoa p : pessoas) {
-                        System.out.println("ID: " + p.getId());
-                        System.out.println("Nome: " + p.getNome());
-                        System.out.println("Endereço: " + p.getEndereco());
-                        System.out.println("Telefone: " + p.getTelefone());
-                        System.out.println("--------");
-                    }
-                    break;
-
-                case 3:
                     // Atualizar uma pessoa existente (se houver)
                     pessoas = pessoaDAO.listarPessoas();
                     if (!pessoas.isEmpty()) {
-                        System.out.println("Digite o ID da pessoa a ser atualizada: ");
-                        int idPessoaAtualizar = scanner.nextInt();
-                        scanner.nextLine(); // Limpar o buffer do scanner após a leitura do inteiro
-
+                        int idPessoaAtualizar = Integer.parseInt(JOptionPane.showInputDialog("Digite o ID da pessoa a ser atualizada: "));
                         Pessoa pessoaAtualizada = coletarInformacoesDoUsuario(scanner);
                         pessoaAtualizada.setId(idPessoaAtualizar);
 
                         pessoaDAO.atualizarPessoa(pessoaAtualizada);
-                        System.out.println("Pessoa atualizada com sucesso!");
+                        JOptionPane.showMessageDialog(null, "Pessoa atualizada com sucesso!");
                     } else {
-                        System.out.println("Não há pessoas cadastradas para atualizar.");
+                        JOptionPane.showMessageDialog(null, "Não há pessoas cadastradas para atualizar.");
+                    }
+                    break;
+
+                case 3:
+                    // Deletar uma pessoa existente (se houver)
+                    pessoas = pessoaDAO.listarPessoas();
+                    if (!pessoas.isEmpty()) {
+                        int idPessoaDeletar = Integer.parseInt(JOptionPane.showInputDialog("Digite o ID da pessoa a ser deletada: "));
+                        pessoaDAO.deletarPessoa(idPessoaDeletar);
+                        JOptionPane.showMessageDialog(null, "Pessoa deletada com sucesso!");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Não há pessoas cadastradas para deletar.");
                     }
                     break;
 
                 case 4:
-                    // Deletar uma pessoa existente (se houver)
-                    pessoas = pessoaDAO.listarPessoas();
-                    if (!pessoas.isEmpty()) {
-                        System.out.println("Digite o ID da pessoa a ser deletada: ");
-                        int idPessoaDeletar = scanner.nextInt();
-                        scanner.nextLine(); // Limpar o buffer do scanner após a leitura do inteiro
-
-                        pessoaDAO.deletarPessoa(idPessoaDeletar);
-                        System.out.println("Pessoa deletada com sucesso!");
-                    } else {
-                        System.out.println("Não há pessoas cadastradas para deletar.");
-                    }
-                    break;
-
-                case 0:
-                    System.out.println("Encerrando o programa. Até mais!");
+                    JOptionPane.showMessageDialog(null, "Encerrando o programa. Até mais!");
                     break;
 
                 default:
-                    System.out.println("Opção inválida. Tente novamente.");
+                    JOptionPane.showMessageDialog(null, "Opção inválida. Tente novamente.");
                     break;
             }
 
-        } while (opcao != 0);
+        } while (opcao != 4);
 
         scanner.close();
     }
 
     // Método para coletar informações do usuário e criar um objeto Pessoa
     private static Pessoa coletarInformacoesDoUsuario(Scanner scanner) {
-        System.out.println("Digite o nome da pessoa: ");
-        String nome = scanner.nextLine();
-
-        System.out.println("Digite o endereço da pessoa: ");
-        String endereco = scanner.nextLine();
-
-        System.out.println("Digite o telefone da pessoa: ");
-        String telefone = scanner.nextLine();
+        String nome = JOptionPane.showInputDialog("Digite o nome da pessoa: ");
+        String endereco = JOptionPane.showInputDialog("Digite o endereço da pessoa: ");
+        String telefone = JOptionPane.showInputDialog("Digite o telefone da pessoa: ");
 
         Pessoa pessoa = new Pessoa();
         pessoa.setNome(nome);
